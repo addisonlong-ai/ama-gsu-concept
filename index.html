@@ -129,6 +129,18 @@ tr:last-child td{border-bottom:0}
 .stats span{color:var(--muted);font-size:.88rem}
 .news{margin-top:18px;border-left:3px solid var(--signal);padding:4px 0 4px 16px}
 .news p{margin:4px 0 0}
+/* e-board */
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.officer{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;display:flex;gap:16px;align-items:center}
+.avatar{flex:none;width:64px;height:64px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font:800 1.2rem var(--display)}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.avatar svg{width:34px;height:34px;opacity:.7}
+.officer .who{display:grid;gap:2px;min-width:0}
+.officer .role-t{font:500 .7rem var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--signal)}
+.officer h3{font-size:1.1rem}
+.officer .sub{color:var(--muted);font-size:.9rem}
+.officer.empty-slot h3{color:var(--muted);font-weight:700}
+.officer a{font-weight:600;font-size:.88rem;text-decoration:none}
 /* join */
 .join{display:grid;grid-template-columns:1.2fr 1fr;gap:30px;align-items:center}
 .join ul{list-style:none;padding:0;margin:0;display:grid;gap:10px}
@@ -148,10 +160,11 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--muted);fo
 @media (max-width:860px){
   .hero,.join,.about{grid-template-columns:1fr}
   .brief.feature{grid-template-columns:1fr}
+  .board{grid-template-columns:repeat(2,1fr)}
   .albums{grid-template-columns:repeat(2,1fr)}
 }
 @media (max-width:520px){
-  .albums{grid-template-columns:1fr}
+  .albums,.board{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion:no-preference){.tile::after{transition:transform .3s ease}.tile .view{transition:background .2s}}
 </style>
@@ -159,7 +172,7 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--muted);fo
 <div class="concept">Unofficial concept by Addison Long · Not the official AMA at GSU website</div>
 <header class="top"><div class="wrap">
   <a class="logo" href="#top"><span class="mark mono" aria-hidden="true">AMA</span>AMA at GSU</a>
-  <nav><a href="#about">About</a><a href="#events">Events</a><a href="#gallery">Past events</a><a href="#people">People</a><a href="#join">Join</a></nav>
+  <nav><a href="#about">About</a><a href="#events">Events</a><a href="#gallery">Past events</a><a href="#eboard">E-board</a><a href="#people">People</a><a href="#join">Join</a></nav>
 </div></header>
 
 <main class="wrap" id="top">
@@ -216,6 +229,15 @@ footer{padding-block:28px;border-top:1px solid var(--line);color:var(--muted);fo
       <p>Speakers, workshops, and partner nights from the past few months. Tap one to see the full flyer.</p></div>
     </div>
     <div class="albums" id="albums"></div>
+  </section>
+
+  <section id="eboard">
+    <div class="sec-head">
+      <div><div class="eyebrow">2026–2027 Leadership</div><h2>Meet the e-board</h2>
+      <p>The students who plan every meeting, speaker night, and workshop.</p></div>
+      <span class="tag" id="boardTag">Preview</span>
+    </div>
+    <div class="board" id="board"></div>
   </section>
 
   <section id="people">
@@ -290,6 +312,20 @@ const people=[
  ["Nia Sanders","Member","Economics","campaigns"],
  ["Evan Park","Guest","Film & Media","campaigns"]
 ];
+/* E-board: fill in name, major, photo (image file or data URL), linkedin (full URL). Leave name "" to show a placeholder. */
+const eboard=[
+ {role:"President",name:"Shruthi Balachander",major:"Senior · Marketing, minor in Pre-Law and Ethics",photo:"",linkedin:""},
+ {role:"Vice President",name:"Julie Ho",major:"Senior · Finance",photo:"",linkedin:""},
+ {role:"Director of Finance",name:"Ariel Ross",major:"Senior · Accounting",photo:"",linkedin:""},
+ {role:"Director of Media",name:"Micah Woods",major:"Senior · Marketing, minor in International Business",photo:"",linkedin:""},
+ {role:"Director of Advertising & Communications",name:"Johari Toussaint",major:"Senior · Marketing",photo:"",linkedin:""},
+ {role:"Director of Membership & Engagement",name:"Amirah Duncan",major:"Marketing",photo:"",linkedin:""},
+ {role:"Director of Operations & Programming",name:"Hung Nguyen",major:"Marketing, minor in Psychology",photo:"",linkedin:""},
+ {role:"Graphic Design Lead",name:"Catherine Osorio",major:"Marketing",photo:"",linkedin:""},
+ {role:"Fundraising & Tabling Lead",name:"Chimuanya Gabrielle Uwadileke",major:"Marketing, minor in Journalism",photo:"",linkedin:""},
+ {role:"Fundraising & Tabling Lead",name:"Sydney Olaiya",major:"Marketing",photo:"",linkedin:""},
+ {role:"Student Engagement Lead",name:"Abigail Ventura",major:"Marketing",photo:"",linkedin:""}
+];
 const fmt=d=>new Date(d.length===10?d+"T12:00":d).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"});
 const evName=id=>past.find(p=>p.id===id).name;
 
@@ -313,6 +349,14 @@ document.getElementById("briefs").innerHTML=upcoming.map(e=>`
  el.textContent=`Starts in ${d} day${d===1?"":"s"}, ${h} hr`;
  setTimeout(tick,6e4);
 })();
+
+const person='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>';
+const initials=n=>n.split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+document.getElementById("board").innerHTML=eboard.map(o=>`<article class="officer${o.name?"":" empty-slot"}">
+ <div class="avatar">${o.photo?`<img src="${o.photo}" alt="${o.name}">`:o.name?initials(o.name):person}</div>
+ <div class="who"><span class="role-t">${o.role}</span><h3>${o.name||"Name coming soon"}</h3>
+ ${o.major?`<span class="sub">${o.major}</span>`:""}${o.linkedin?`<a href="${o.linkedin}" target="_blank" rel="noopener">LinkedIn</a>`:""}</div></article>`).join("");
+document.getElementById("boardTag").hidden=eboard.every(o=>o.name);
 
 const albums=document.getElementById("albums");
 const md=d=>new Date(d+"T12:00");
